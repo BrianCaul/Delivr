@@ -15,16 +15,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 import com.delivr.model.Customer;
-import com.delivr.model.Driver;
 import com.delivr.model.User;
 import com.delivr.service.CustomerService;
-import com.delivr.service.DriverService;
 import com.delivr.service.UserService;
 
 @Controller
 @SessionAttributes("customer")
 public class CustomerRestController {
 
+	
 	@Autowired
 	private CustomerService customerService;
 	
@@ -55,7 +54,7 @@ public class CustomerRestController {
 		return new ModelAndView(jsonView, DATA_FIELD, results);
 	}
 
-	@RequestMapping(value = "/rest/{customerid}/packages", method = RequestMethod.GET)
+	@RequestMapping(value = "/rest/customers/{customerid}/packages", method = RequestMethod.GET)
 	public ModelAndView getAllCustomerPackages(@PathVariable String customerid) {
 		Customer customer = null;
 		try {
@@ -74,6 +73,9 @@ public class CustomerRestController {
 
 		User user = userService.findByUserId(userid);
 		Customer customer = new Customer(user, address, review);
+		
+		//Delete Duplicated Parent Id
+		userService.deleteUser(userid);
 		try {
 			customer = customerService.createCustomer(customer);
 		} catch (Exception e) {

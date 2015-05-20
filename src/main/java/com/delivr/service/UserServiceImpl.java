@@ -20,14 +20,14 @@ public class UserServiceImpl implements UserService {
 		return userRepository.save(user);
 	}
 
-	public boolean findByLogin(String userName, String password) {	
+	public User findByLogin(String userName, String password) {	
 		User user = userRepository.findByUserName(userName);
 		
 		if(user != null && user.getPassword().equals(password)) {
-			return true;
+			return user;
 		} 
 		
-		return false;		
+		return new User();		
 	}
 
 	public boolean findByUserName(String userName) {

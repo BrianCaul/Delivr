@@ -1,6 +1,5 @@
 package com.delivr.controller.rest;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class DriverRestController {
 	}
 
 	// JSON MAPPING as it returns the jsonView
-	@RequestMapping(value = "/rest/{driverid}/packages", method = RequestMethod.GET)
+	@RequestMapping(value = "/rest/drivers/{driverid}/packages", method = RequestMethod.GET)
 	public ModelAndView getAllDriverPackages(@PathVariable String driverid) {
 		Driver driver = null;
 		try {
@@ -76,6 +75,9 @@ public class DriverRestController {
 
 		User user = userService.findByUserId(userid);
 		Driver driver = new Driver(user, address, review, type);
+		
+		//Delete Duplicated Parent Id
+		userService.deleteUser(userid);
 		try {
 			driver = driverService.createDriver(driver);
 		} catch (Exception e) {

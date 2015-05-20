@@ -48,7 +48,6 @@ public class Package {
 	 @JoinColumn(name = "driver_id")
 	 private Driver driver;	
 	
-	@NotNull
 	@Past
 	@DateTimeFormat(pattern="MM/dd/yyyy")
 	private Date dateReceived;

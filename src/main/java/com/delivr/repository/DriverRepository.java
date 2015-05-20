@@ -12,8 +12,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
 	
 	@Query("select d from Driver d where d.userName = :userName")
 	Driver findByUserName(@Param("userName") String userName);
-	
-	@Query("select distinct d from Driver d join fetch d.packages where d.id = :driverId")
-	Driver getAllDriverpackages(@Param("driverId") long driverId);
-	
+		
 }

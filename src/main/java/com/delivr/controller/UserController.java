@@ -69,8 +69,8 @@ public class UserController {
 		if (result.hasErrors()) {
 			return "login";
 		} else {
-			boolean found = userService.findByLogin(userLogin.getUserName(), userLogin.getPassword());
-			if (found) {				
+			User user = userService.findByLogin(userLogin.getUserName(), userLogin.getPassword());
+			if(user != null && user.getId() !=null){	
 				return "success";
 			} else {				
 				return "failure";

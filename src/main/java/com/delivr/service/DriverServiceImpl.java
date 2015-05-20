@@ -44,7 +44,7 @@ public class DriverServiceImpl implements DriverService {
 	}
 
 	public Driver getDriverByID(String driverId) {
-		return driverRepository.getAllDriverpackages(Long.parseLong(driverId));
+		return driverRepository.findOne(Long.parseLong(driverId));
 	}
 	
 	@Transactional

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 import com.delivr.model.User;
+import com.delivr.service.EmailService;
 import com.delivr.service.UserService;
 
 @Controller
@@ -26,6 +27,9 @@ public class UserRestController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	@Autowired
 	private View jsonView;
@@ -89,20 +93,62 @@ public class UserRestController {
 			@RequestParam("uname") String userName) {
 
 		User user = new User();
-		try {
-			Date dateofBirth = parseDate(dob, dateFormats);
+		if (userService.findByUserName(userName)) {
+			String sMessage = "User Name exists. Try another user name";
+			return getErrorJSON(String.format(sMessage));
+		} else {
 
-			user.setDateOfBirth(dateofBirth);
-			user.setEmailAddress(emailAddress);
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
-			user.setPassword(password);
-			user.setUserName(userName);
-			user = userService.createUser(user);
-		} catch (Exception e) {
-			String sMessage = "Error creating user";
-			return getErrorJSON(String.format(sMessage, e.toString()));
+			try {
+				Date dateofBirth = parseDate(dob, dateFormats);
+
+				user.setDateOfBirth(dateofBirth);
+				user.setEmailAddress(emailAddress);
+				user.setFirstName(firstName);
+				user.setLastName(lastName);
+				user.setPassword(password);
+				user.setUserName(userName);
+				user = userService.createUser(user);
+			} catch (Exception e) {
+				String sMessage = "Error creating user";
+				return getErrorJSON(String.format(sMessage, e.toString()));
+			}
+
 		}
+
+		return new ModelAndView(jsonView, DATA_FIELD, user);
+	}
+	
+	
+	@RequestMapping(value = "/rest/confirmEmail", method = RequestMethod.POST)
+	public ModelAndView createUser(@RequestParam("userId") String userId) {
+			boolean emailSuccess = false;
+		
+			try {
+				User user = userService.findByUserId(userId);
+				emailSuccess = emailService.sendConfirmSignUpEmail(user);
+				System.out.println("Email sent:" +emailSuccess);
+			} catch (Exception e) {
+				String sMessage = "Error creating user";
+				return getErrorJSON(String.format(sMessage, e.toString()));
+			}
+
+		return new ModelAndView(jsonView, DATA_FIELD, "Sent email :" +emailSuccess);
+	}
+	
+	@RequestMapping(value = "/rest/users/signin", method = RequestMethod.POST)
+	public ModelAndView signIn(@RequestParam("uname") String userName, @RequestParam("pass") String password) {
+			User user = new User();
+			try {
+				user = userService.findByLogin(userName, password);
+			} catch (Exception e) {
+				String sMessage = "Error logging in user";
+				return getErrorJSON(String.format(sMessage, e.toString()));
+			}
+			
+			if(user == null || user.getId() ==null){
+				String sMessage = "User credentials are incorrect";
+				return getErrorJSON(String.format(sMessage));
+			}
 
 		return new ModelAndView(jsonView, DATA_FIELD, user);
 	}
